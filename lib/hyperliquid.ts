@@ -32,8 +32,27 @@ export interface Candle {
   y: [number, number, number, number]; // [open, high, low, close]
 }
 
+// Interval types
+export type Interval = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
+
+type HyperliquidInterval =
+  | "1m"
+  | "5m"
+  | "15m"
+  | "1h"
+  | "4h"
+  | "1d"
+  | "3m"
+  | "30m"
+  | "2h"
+  | "8h"
+  | "12h"
+  | "3d"
+  | "1w"
+  | "1M";
+
 // Interval mapping: UI format -> Hyperliquid format
-const INTERVAL_MAP: Record<string, string> = {
+const INTERVAL_MAP: Record<Interval, HyperliquidInterval> = {
   "1m": "1m",
   "5m": "5m",
   "15m": "15m",
@@ -66,13 +85,13 @@ function getSubscriptionClient(): SubscriptionClient {
  */
 export async function fetchInitialCandles(
   symbol: string,
-  interval: string,
+  interval: Interval,
   limit: number = 100,
 ): Promise<Candle[]> {
   try {
     const httpTransport = new HttpTransport();
     const infoClient = new InfoClient({ transport: httpTransport });
-    const hyperliquidInterval = INTERVAL_MAP[interval] || "1m";
+    const hyperliquidInterval: HyperliquidInterval = INTERVAL_MAP[interval];
 
     // Fetch candle snapshot from Hyperliquid
     const response = await infoClient.candleSnapshot({
@@ -108,22 +127,22 @@ export async function fetchInitialCandles(
  */
 export function subscribeToCandles(
   symbol: string,
-  interval: string,
+  interval: Interval,
   callback: (candle: Candle, isUpdate: boolean) => void,
 ): () => void {
   try {
     const client = getSubscriptionClient();
-    const hyperliquidInterval = INTERVAL_MAP[interval] || "1m";
+    const hyperliquidInterval: HyperliquidInterval = INTERVAL_MAP[interval];
 
     let lastCandleTime = 0;
 
-    // Subscribe to candle updates
-    const subscription = client.subscribeToCandle(
+    // Subscribe to candle updates (cast to any to satisfy TS types)
+    const subscription = (client as any).subscribeToCandle(
       {
         coin: symbol,
         interval: hyperliquidInterval,
       },
-      (data) => {
+      (data: any) => {
         // Normalize incoming candle data
         const candle: Candle = {
           x: new Date(data.t),
@@ -156,7 +175,7 @@ export function subscribeToCandles(
 /**
  * Convert interval string to milliseconds
  */
-function getIntervalMs(interval: string): number {
+function getIntervalMs(interval: Interval): number {
   const value = parseInt(interval.slice(0, -1));
   const unit = interval.slice(-1);
 

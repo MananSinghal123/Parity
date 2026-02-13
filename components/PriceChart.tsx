@@ -7,6 +7,7 @@ import {
   fetchInitialCandles,
   subscribeToCandles,
   Candle,
+  Interval,
 } from "@/lib/hyperliquid";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,7 @@ interface PriceChartProps {
 }
 
 // Available timeframes
-const TIMEFRAMES = [
+const TIMEFRAMES: { label: string; value: Interval }[] = [
   { label: "1m", value: "1m" },
   { label: "5m", value: "5m" },
   { label: "15m", value: "15m" },
@@ -36,7 +37,7 @@ const TIMEFRAMES = [
 
 export function PriceChart({ symbol }: PriceChartProps) {
   const [mounted, setMounted] = useState(false);
-  const [interval, setInterval] = useState("1m");
+  const [interval, setInterval] = useState<Interval>("1m");
   const [candleData, setCandleData] = useState<Candle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -179,7 +180,7 @@ export function PriceChart({ symbol }: PriceChartProps) {
   /**
    * Handle timeframe change
    */
-  const handleIntervalChange = (newInterval: string) => {
+  const handleIntervalChange = (newInterval: Interval) => {
     if (newInterval === interval) return;
 
     setInterval(newInterval);
@@ -210,7 +211,6 @@ export function PriceChart({ symbol }: PriceChartProps) {
       },
       animations: {
         enabled: true,
-        easing: "linear",
         speed: 200,
         animateGradually: {
           enabled: true,

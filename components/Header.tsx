@@ -1,6 +1,7 @@
 "use client";
 
-import { Bell, User } from "lucide-react";
+import { Bell } from "lucide-react";
+import { ConnectWalletButton } from "@/components/ConnectWalletButton";
 
 export function Header() {
   return (
@@ -8,7 +9,9 @@ export function Header() {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          <span className="text-sm text-text-secondary">All Systems Operational</span>
+          <span className="text-sm text-text-secondary">
+            All Systems Operational
+          </span>
         </div>
       </div>
 
@@ -17,11 +20,8 @@ export function Header() {
           <Bell className="h-5 w-5 text-text-secondary" />
           <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-danger" />
         </button>
-        
-        <button className="flex items-center gap-2 rounded-lg bg-surface-light px-3 py-2 hover:bg-border transition-colors">
-          <User className="h-5 w-5 text-text-secondary" />
-          <span className="text-sm text-text-primary">0x742d...5e89</span>
-        </button>
+
+        <ConnectWalletButton />
       </div>
     </header>
   );
