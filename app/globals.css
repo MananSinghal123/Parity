@@ -9,24 +9,24 @@ body {
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #2b3139 #161a1e;
+    scrollbar-color: #c5d0c5 #f0f4f0;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-track {
-    background: #161a1e;
+    background: #f0f4f0;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #2b3139;
+    background: #c5d0c5;
     border-radius: 3px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #3b4149;
+    background: #a8b5a8;
   }
 }

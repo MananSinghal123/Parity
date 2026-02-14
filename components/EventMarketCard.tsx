@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { EventMarket } from "@/lib/types";
 import { formatProbability, formatVolume, cn } from "@/lib/utils";
-import { Info, Clock } from "lucide-react";
+import { getPolymarketTradeUrl } from "@/lib/polymarket";
+import { useTrading } from "@/providers/TradingProvider";
+import useClobOrder from "@/hooks/useClobOrder";
+import { Info, Clock, ExternalLink } from "lucide-react";
 
 interface EventMarketCardProps {
   event: EventMarket;
@@ -12,14 +15,56 @@ interface EventMarketCardProps {
 export function EventMarketCard({ event }: EventMarketCardProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [amount, setAmount] = useState("");
-  const [selectedOutcome, setSelectedOutcome] = useState<"yes" | "no" | null>(null);
+  const [selectedOutcome, setSelectedOutcome] = useState<"yes" | "no" | null>(
+    null,
+  );
 
-  const handleBuy = (outcome: "yes" | "no") => {
-    if (!amount) {
-      alert("Please enter an amount");
+  const { isTradingSessionComplete, clobClient, eoaAddress } = useTrading();
+  const { submitOrder, isSubmitting } = useClobOrder(clobClient, eoaAddress);
+
+  const canPlaceOrderInApp =
+    isTradingSessionComplete &&
+    clobClient &&
+    eoaAddress &&
+    ((selectedOutcome === "yes" && event.clobTokenIdYes) ||
+      (selectedOutcome === "no" && event.clobTokenIdNo));
+
+  const handlePlaceBet = async () => {
+    if (!amount || !selectedOutcome) {
+      alert("Please enter an amount and select YES or NO");
       return;
     }
-    alert(`Buying ${amount} ${outcome.toUpperCase()} shares for event: ${event.question}`);
+
+    const shares = parseFloat(amount);
+    if (isNaN(shares) || shares <= 0) {
+      alert("Please enter a valid number of shares");
+      return;
+    }
+
+    if (canPlaceOrderInApp) {
+      try {
+        const tokenId =
+          selectedOutcome === "yes"
+            ? event.clobTokenIdYes!
+            : event.clobTokenIdNo!;
+        const price =
+          selectedOutcome === "yes"
+            ? event.yesProbability
+            : event.noProbability;
+        await submitOrder({
+          tokenId,
+          size: shares,
+          price,
+          side: "BUY",
+          negRisk: false,
+        });
+        alert("Order placed successfully!");
+      } catch (err: any) {
+        alert(err?.message ?? "Order failed");
+      }
+    } else {
+      window.open(getPolymarketTradeUrl(event), "_blank");
+    }
   };
 
   return (
@@ -53,7 +98,7 @@ export function EventMarketCard({ event }: EventMarketCardProps) {
             "bg-surface-light border rounded-lg p-3 cursor-pointer transition-all",
             selectedOutcome === "yes"
               ? "border-success bg-success/5"
-              : "border-border hover:border-success/50"
+              : "border-border hover:border-success/50",
           )}
         >
           <div className="text-xs text-text-tertiary mb-1">YES</div>
@@ -61,7 +106,7 @@ export function EventMarketCard({ event }: EventMarketCardProps) {
             {formatProbability(event.yesProbability)}
           </div>
           <div className="text-xs text-text-tertiary mt-1">
-            ${(event.yesProbability).toFixed(2)} per share
+            ${event.yesProbability.toFixed(2)} per share
           </div>
         </div>
 
@@ -71,7 +116,7 @@ export function EventMarketCard({ event }: EventMarketCardProps) {
             "bg-surface-light border rounded-lg p-3 cursor-pointer transition-all",
             selectedOutcome === "no"
               ? "border-danger bg-danger/5"
-              : "border-border hover:border-danger/50"
+              : "border-border hover:border-danger/50",
           )}
         >
           <div className="text-xs text-text-tertiary mb-1">NO</div>
@@ -79,7 +124,7 @@ export function EventMarketCard({ event }: EventMarketCardProps) {
             {formatProbability(event.noProbability)}
           </div>
           <div className="text-xs text-text-tertiary mt-1">
-            ${(event.noProbability).toFixed(2)} per share
+            ${event.noProbability.toFixed(2)} per share
           </div>
         </div>
       </div>
@@ -102,7 +147,9 @@ export function EventMarketCard({ event }: EventMarketCardProps) {
               Estimated cost: $
               {(
                 parseFloat(amount) *
-                (selectedOutcome === "yes" ? event.yesProbability : event.noProbability)
+                (selectedOutcome === "yes"
+                  ? event.yesProbability
+                  : event.noProbability)
               ).toFixed(2)}
             </div>
           )}
@@ -111,17 +158,34 @@ export function EventMarketCard({ event }: EventMarketCardProps) {
 
       {/* Action Buttons */}
       {selectedOutcome && (
-        <button
-          onClick={() => handleBuy(selectedOutcome)}
-          className={cn(
-            "w-full py-2 rounded text-sm font-medium transition-colors mb-3",
-            selectedOutcome === "yes"
-              ? "bg-success hover:bg-success/90 text-white"
-              : "bg-danger hover:bg-danger/90 text-white"
+        <>
+          <button
+            onClick={handlePlaceBet}
+            disabled={!amount || parseFloat(amount) <= 0 || isSubmitting}
+            className={cn(
+              "w-full py-2 rounded-lg text-sm font-medium transition-colors mb-2 flex items-center justify-center gap-2",
+              selectedOutcome === "yes"
+                ? "bg-success hover:bg-success/90 text-white disabled:opacity-70"
+                : "bg-danger hover:bg-danger/90 text-white disabled:opacity-70",
+            )}
+          >
+            {isSubmitting
+              ? "Placing..."
+              : canPlaceOrderInApp
+                ? `Buy ${selectedOutcome.toUpperCase()} (gasless)`
+                : "Place bet on Polymarket"}
+          </button>
+          {canPlaceOrderInApp && (
+            <a
+              href={getPolymarketTradeUrl(event)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1 text-xs text-text-tertiary hover:text-primary transition-colors"
+            >
+              Open on Polymarket <ExternalLink className="h-3 w-3" />
+            </a>
           )}
-        >
-          Buy {selectedOutcome.toUpperCase()}
-        </button>
+        </>
       )}
 
       {/* Meta Info */}

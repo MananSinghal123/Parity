@@ -1,4 +1,4 @@
-import { Token, EventMarket, PortfolioPosition } from "./types";
+import { Token, PortfolioPosition } from "./types";
 
 export const MOCK_TOKENS: Token[] = [
   {
@@ -32,99 +32,6 @@ export const MOCK_TOKENS: Token[] = [
     change24h: -1.12,
     volume24h: 156700000,
     riskScore: "medium",
-  },
-];
-
-export const MOCK_EVENT_MARKETS: EventMarket[] = [
-  {
-    id: 1,
-    token: "APT",
-    question: "Will APT drop >30% in 14 days?",
-    yesProbability: 0.22,
-    noProbability: 0.78,
-    liquidity: 45000,
-    description: "Resolves YES if APT price drops more than 30% from current price within 14 days",
-    expiresIn: "14 days",
-  },
-  {
-    id: 2,
-    token: "APT",
-    question: "Will Aptos network halt in next 30 days?",
-    yesProbability: 0.08,
-    noProbability: 0.92,
-    liquidity: 32000,
-    description: "Resolves YES if Aptos mainnet experiences downtime >1 hour",
-    expiresIn: "30 days",
-  },
-  {
-    id: 3,
-    token: "APT",
-    question: "Will major unlock >5% supply occur this month?",
-    yesProbability: 0.35,
-    noProbability: 0.65,
-    liquidity: 28000,
-    description: "Resolves YES if token unlock releases >5% of circulating supply",
-    expiresIn: "28 days",
-  },
-  {
-    id: 4,
-    token: "OP",
-    question: "Will OP drop >25% in 14 days?",
-    yesProbability: 0.18,
-    noProbability: 0.82,
-    liquidity: 38000,
-    description: "Resolves YES if OP price drops more than 25% from current price within 14 days",
-    expiresIn: "14 days",
-  },
-  {
-    id: 5,
-    token: "OP",
-    question: "Will Optimism have security incident in 30 days?",
-    yesProbability: 0.12,
-    noProbability: 0.88,
-    liquidity: 25000,
-    description: "Resolves YES if critical security vulnerability is exploited",
-    expiresIn: "30 days",
-  },
-  {
-    id: 6,
-    token: "ETH",
-    question: "Will ETH drop below $2500 in 14 days?",
-    yesProbability: 0.28,
-    noProbability: 0.72,
-    liquidity: 150000,
-    description: "Resolves YES if ETH price drops below $2500",
-    expiresIn: "14 days",
-  },
-  {
-    id: 7,
-    token: "ETH",
-    question: "Will Ethereum have network congestion event?",
-    yesProbability: 0.15,
-    noProbability: 0.85,
-    liquidity: 85000,
-    description: "Resolves YES if gas fees exceed 500 gwei for >6 hours",
-    expiresIn: "30 days",
-  },
-  {
-    id: 8,
-    token: "ARB",
-    question: "Will ARB drop >30% in 14 days?",
-    yesProbability: 0.25,
-    noProbability: 0.75,
-    liquidity: 42000,
-    description: "Resolves YES if ARB price drops more than 30% from current price within 14 days",
-    expiresIn: "14 days",
-  },
-  {
-    id: 9,
-    token: "ARB",
-    question: "Will Arbitrum sequencer go down in 30 days?",
-    yesProbability: 0.10,
-    noProbability: 0.90,
-    liquidity: 31000,
-    description: "Resolves YES if Arbitrum sequencer experiences downtime >2 hours",
-    expiresIn: "30 days",
   },
 ];
 

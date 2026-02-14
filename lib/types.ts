@@ -8,14 +8,19 @@ export interface Token {
 }
 
 export interface EventMarket {
-  id: number;
-  token: string;
+  id: string;
   question: string;
   yesProbability: number;
   noProbability: number;
   liquidity: number;
   description: string;
   expiresIn: string;
+  /** Polymarket CLOB token ID for YES outcome - enables in-app order placement */
+  clobTokenIdYes: string;
+  /** Polymarket CLOB token ID for NO outcome - enables in-app order placement */
+  clobTokenIdNo: string;
+  /** Polymarket event slug for trade URL */
+  polymarketSlug: string;
 }
 
 export interface PortfolioPosition {

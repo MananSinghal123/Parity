@@ -5,16 +5,18 @@ import { useParams, useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { TradingPanel } from "@/components/TradingPanel";
 import { EventMarketCard } from "@/components/EventMarketCard";
-import { Shield } from "lucide-react";
+import { TradingSessionBanner } from "@/components/TradingSessionBanner";
+import { usePolymarketEvents } from "@/hooks/usePolymarketEvents";
+import { Shield, Loader2 } from "lucide-react";
 
 export default function TradingPage() {
   const params = useParams();
   const router = useRouter();
   const symbol = params.symbol as string;
-  
+
   const token = useAppStore((state) => state.getTokenBySymbol(symbol));
-  const eventMarkets = useAppStore((state) => state.getEventMarketsForToken(symbol));
   const setSelectedToken = useAppStore((state) => state.setSelectedToken);
+  const { data: eventMarkets = [], isLoading } = usePolymarketEvents(15);
 
   useEffect(() => {
     if (!token) {
@@ -48,14 +50,22 @@ export default function TradingPage() {
         </div>
 
         <div className="p-4 space-y-4">
-          {eventMarkets.length > 0 ? (
+          <TradingSessionBanner />
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12 gap-2 text-text-secondary">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="text-sm">Loading Polymarket events…</span>
+            </div>
+          ) : eventMarkets.length > 0 ? (
             eventMarkets.map((event) => (
               <EventMarketCard key={event.id} event={event} />
             ))
           ) : (
             <div className="text-center py-12">
               <Shield className="h-12 w-12 text-text-tertiary mx-auto mb-3" />
-              <p className="text-text-secondary">No event markets available for {token.symbol}</p>
+              <p className="text-text-secondary">
+                No Polymarket events available right now
+              </p>
             </div>
           )}
         </div>
@@ -63,10 +73,13 @@ export default function TradingPage() {
         {eventMarkets.length > 0 && (
           <div className="p-4 border-t border-border bg-surface-light">
             <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
-              <h4 className="text-sm font-semibold text-primary mb-2">How Hedging Works</h4>
+              <h4 className="text-sm font-semibold text-primary mb-2">
+                How Hedging Works
+              </h4>
               <p className="text-xs text-text-secondary leading-relaxed">
-                Buy YES shares if you think the event will happen. If it does, you receive $1 per share.
-                This helps offset losses in your token position if adverse events occur.
+                Buy YES shares if you think the event will happen. If it does,
+                you receive $1 per share. This helps offset losses in your token
+                position if adverse events occur.
               </p>
             </div>
           </div>

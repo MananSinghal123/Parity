@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
   loading: () => (
-    <div className="h-96 flex items-center justify-center bg-[#0b1220] rounded-lg">
+    <div className="h-96 flex items-center justify-center bg-surface rounded-lg">
       <div className="animate-pulse text-text-secondary">Loading chart...</div>
     </div>
   ),
@@ -228,11 +228,11 @@ export function PriceChart({ symbol }: PriceChartProps) {
       },
     },
     theme: {
-      mode: "dark",
+      mode: "light",
     },
     grid: {
       show: true,
-      borderColor: "#1e2329",
+      borderColor: "var(--tw-border-color, #e2e8f0)",
       strokeDashArray: 3,
       position: "back",
       xaxis: {
@@ -271,12 +271,12 @@ export function PriceChart({ symbol }: PriceChartProps) {
       },
       axisBorder: {
         show: true,
-        color: "#2b3139",
+        color: "#64748b",
         height: 1,
       },
       axisTicks: {
         show: true,
-        color: "#2b3139",
+        color: "#64748b",
         height: 4,
       },
       crosshairs: {
@@ -306,7 +306,7 @@ export function PriceChart({ symbol }: PriceChartProps) {
       },
       axisBorder: {
         show: true,
-        color: "#2b3139",
+        color: "#64748b",
       },
       crosshairs: {
         show: true,
@@ -320,8 +320,8 @@ export function PriceChart({ symbol }: PriceChartProps) {
     plotOptions: {
       candlestick: {
         colors: {
-          upward: "#0ecb81", // Green for bullish candles
-          downward: "#f6465d", // Red for bearish candles
+          upward: "#16a34a",
+          downward: "#dc2626",
         },
         wick: {
           useFillColor: true,
@@ -338,7 +338,7 @@ export function PriceChart({ symbol }: PriceChartProps) {
     },
     tooltip: {
       enabled: true,
-      theme: "dark",
+      theme: "light",
       shared: false,
       custom: function ({ seriesIndex, dataPointIndex, w }) {
         const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
@@ -351,7 +351,7 @@ export function PriceChart({ symbol }: PriceChartProps) {
         const isGreen = c >= o;
 
         return `
-          <div class="px-3 py-2 bg-[#1e2329] border border-[#2b3139] rounded-lg text-xs">
+          <div class="px-3 py-2 bg-surface-light border border-border rounded-lg text-xs">
             <div class="font-semibold text-text-primary mb-2">
               ${new Date(data.x).toLocaleString()}
             </div>
@@ -395,7 +395,7 @@ export function PriceChart({ symbol }: PriceChartProps) {
   // Prevent hydration mismatch - don't render until mounted
   if (!mounted) {
     return (
-      <div className="bg-[#0b1220] rounded-lg border border-border overflow-hidden">
+      <div className="bg-surface rounded-lg border border-border overflow-hidden">
         <div className="bg-surface border-b border-border p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -423,7 +423,7 @@ export function PriceChart({ symbol }: PriceChartProps) {
   }
 
   return (
-    <div className="bg-[#0b1220] rounded-lg border border-border overflow-hidden">
+    <div className="bg-surface rounded-lg border border-border overflow-hidden">
       {/* Live Price Header */}
       {mounted && !loading && candleData.length > 0 && (
         <div className="bg-surface border-b border-border p-4">
